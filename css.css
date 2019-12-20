@@ -1,0 +1,7 @@
+body {
+  display: flex;
+}
+
+#display>* {
+  border-style: dashed;
+}
