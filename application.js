@@ -19,6 +19,7 @@ var rope3Constraint = [];
 var engine;
 var world;
 var box1;
+var box1Active;
 var mousePosition = {};
 var mouseSpeed;
 var mouseHasMoved;
@@ -27,6 +28,7 @@ var prevX = 0;
 var prevY = 0;
 var score = 0;
 var scoreText;
+var levelCompleteText;
 var rope3Slide = {
   min: 100,
   max: 400,
@@ -36,7 +38,7 @@ var star1 = {
   y: 350,
   active: true
 };
-var star2= {
+var star2 = {
   x: 200,
   y: 450,
   active: true
@@ -71,6 +73,7 @@ function setup() {
   rope2Active = true;
   rope3Active = true;
 
+  box1Active = true;
   mouseDown = false;
   mouseHasMoved = false;
   stage.interactive = true;
@@ -202,12 +205,13 @@ function setup() {
 }
 
 function draw() {
-
   //Draw main box.
+  if (box1Active) {
   var box1Graphic = new PIXI.Graphics();
   box1Graphic.beginFill(0xFFFF00);
   box1Graphic.lineStyle(5, 0xFF0000);
   box1Graphic.drawRect(box1.position.x + 10, box1.position.y + 10, 20, 20);
+  }
 
   //Draw each rectangle of rope 1.
   if (rope1Active) {
@@ -330,7 +334,12 @@ else {
   if (star3.active) {
   stage.addChild(star3Draw);
   }
+  if (box1Active) {
   stage.addChild(box1Graphic);
+  }
+  else {
+  stage.addChild(levelCompleteText);
+  }
   if (rope1Active) {
   stage.addChild(line1Draw);
   }
@@ -347,7 +356,12 @@ else {
   renderer.render(stage);
 
   //Remove from stage
+  if (box1Active) {
   stage.removeChild(box1Graphic);
+  }
+  else {
+  stage.removeChild(levelCompleteText);
+  }
 
   if (rope1Active) {
   stage.removeChild(drawRopes1);
@@ -447,7 +461,7 @@ function checkForCut() {
 
 }
 
-function CheckForCollisionStar() {
+function CheckForCollision() {
   if (box1.position.x + 20 > star1.x && box1.position.x + 20 < star1.x + 20 && box1.position.y + 20 > star1.y && box1.position.y + 20 < star1.y + 20 && star1.active) {
     star1.active = false;
     score++;
@@ -460,6 +474,13 @@ function CheckForCollisionStar() {
     star3.active = false;
     score++;
   }
+  if (box1.position.x + 20 > endBox.x && box1.position.x + 20 < endBox.x + endBox.sizeX && box1.position.y + 20 > endBox.y && box1.position.y + 20 < endBox.y + endBox.sizeY) {
+    World.remove(world, box1);
+    levelCompleteText = new PIXI.Text('Level Complete! \n    Score: ' + score + "/3", { font: '72px Snippet', fill: 'black', align: 'left' });
+    levelCompleteText.position.x = 150;
+    levelCompleteText.position.y = 100;
+    box1Active = false;
+  }
 }
 
 
@@ -468,7 +489,7 @@ function animate() {
   scoreText.position.x = 20;
   scoreText.position.y = 20;
   draw();
-  CheckForCollisionStar();
+  CheckForCollision();
 
   if (mouseHasMoved) {
   mouseSpeed = mouseSpeedCalc();
