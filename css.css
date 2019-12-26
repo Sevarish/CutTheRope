@@ -1,8 +1,0 @@
-body {
-  display: flex;
-  background-color: lightblue;
-}
-
-#display>* {
-  border-style: dashed;
-}
